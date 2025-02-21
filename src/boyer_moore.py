@@ -45,6 +45,9 @@ def get_bad_char_table(P):
     #####################################################################
     ## ADD CODE HERE
     #####################################################################
+    bad_char_table = {}
+    for index, char in enumerate(P):
+        bad_char_table[char] = index
     return bad_char_table
 
 def boyer_moore_search(T, P):
@@ -52,4 +55,29 @@ def boyer_moore_search(T, P):
     #####################################################################
     ## ADD CODE HERE
     #####################################################################
+    if not P:
+        return []
+    table = get_bad_char_table(P)
+    m = len(P)
+    n = len(T)
+    occurrences = []
+    s = 0
+    while s <= n - m:
+        j = m - 1
+        while j >= 0 and P[j] == T[s + j]:
+            j -= 1
+        if j < 0:
+            occurrences.append(s)
+            if s + m < n:
+                s += m - table.get(T[s + m], -1)
+            else:
+                s += 1
+        else:
+            s += max(1, j - table.get(T[s + j], -1))
     return occurrences
+
+if __name__ == "__main__":
+    T = "HERE IS A SIMPLE EXAMPLE"
+    P = "EXAMPLE"
+    print("Bad character table:", get_bad_char_table(P))
+    print("Pattern found at indices:", boyer_moore_search(T, P))

@@ -5,6 +5,7 @@ import random
 import argparse
 import matplotlib.pyplot as plt
 import naive_search
+import boyer_moore
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -93,7 +94,8 @@ def main():
                              args.text_range[1],
                              args.text_range[2])
 
-    test_functions = [naive_search.naive_search]
+    test_functions = [naive_search.naive_search, boyer_moore.boyer_moore_search]
+    labels = ["Naive", "Boyer-Moore"]
 
 
     run_times, mem_usages = test_harness(test_functions,
@@ -101,27 +103,31 @@ def main():
                                          args.pattern_size,
                                          args.rounds)
 
-    fig, axs = plt.subplots(2,1, figsize=(args.width, args.height))
+    fig, axs = plt.subplots(2, 1, figsize=(args.width, args.height))
     fig.tight_layout(pad=3.0)
+    
     ax = axs[0]
-    ax.plot(text_size_range, run_times[0], label='Naive')
-    ax.set_title(f'String Search Performance(|P|= {args.pattern_size})')
+    for i, label in enumerate(labels):
+        ax.plot(list(text_size_range), run_times[i], label=label)
+    ax.set_title(f'String Search Performance (|P|= {args.pattern_size})')
     ax.set_xlabel('Text size')
     ax.set_ylabel('Run time (ns)')
     ax.legend(loc='best', frameon=False, ncol=3)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
-
+    
     ax = axs[1]
-    ax.plot(text_size_range, mem_usages[0], label='Naive')
+    for i, label in enumerate(labels):
+        ax.plot(list(text_size_range), mem_usages[i], label=label)
     ax.set_xlabel('Text size')
     ax.set_ylabel('Memory (bytes)')
     ax.legend(loc='best', frameon=False, ncol=3)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
-
-
+    
     plt.savefig(args.out_file)
+    plt.show()
+
 
 if __name__ == '__main__':
     main()
